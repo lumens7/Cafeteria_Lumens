@@ -9,7 +9,7 @@ RUN chmod +x mvnw && \
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
-VOLUME /tmp
+WORKDIR /app
 ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
