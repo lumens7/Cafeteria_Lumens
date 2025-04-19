@@ -17,3 +17,11 @@ logging:
   level:
     org.springframework: DEBUG
     com.lumens: TRACE
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    disable-swagger-default-url: true
+  api-docs:
+    path: /v3/api-docs
