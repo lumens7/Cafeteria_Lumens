@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: ${DATABASE_URL}
+    url: ${DATABASE_URL}?sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,16 +15,30 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
-logging:
-  level:
-    org.springframework: DEBUG
-    com.lumens: TRACE
+        jdbc:
+          lob:
+            non_contextual_creation: true
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
     url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
     disable-swagger-default-url: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+    try-it-out-enabled: true
   api-docs:
     path: /v3/api-docs
+  show-actuator: true
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.lumens: TRACE
+
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
