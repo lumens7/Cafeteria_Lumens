@@ -1,9 +1,16 @@
 {
   "build": {
+    "memoryLimit": 2048,
     "builder": "NIXPACKS",
     "config": {
       "buildCommand": "./mvnw clean package -DskipTests",
       "startCommand": "java -jar target/*.jar"
     }
+  },
+  "cache": {
+    "paths": [
+      "/app/.m2/repository",
+      "/app/target"
+    ]
   }
 }
