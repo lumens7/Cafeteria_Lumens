@@ -1,17 +1,12 @@
-# Build stage
-FROM eclipse-temurin:17-jdk-jammy as builder
-WORKDIR /workspace/app
-COPY . .
-RUN chmod +x mvnw && \
-    ./mvnw clean package -DskipTests && \
-    mkdir -p target/dependency && \
-    (cd target/dependency; jar -xf ../*.jar)
-
-# Runtime stage
-FROM eclipse-temurin:17-jre-jammy
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
 WORKDIR /app
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java", "-cp", "app:app/lib/*", "com.lumens.Application"]
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
