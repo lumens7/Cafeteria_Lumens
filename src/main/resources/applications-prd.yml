@@ -1,54 +1,39 @@
+# Configuração GLOBAL (default)
 spring:
-  web:
-    cors:
-      allowed-origins: "*"
-      allowed-methods: "*"
-  datasource:
-    url: ${DATABASE_URL}?sslmode=require
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 5
-      initialization-fail-timeout: 0
-
   jpa:
-    hibernate:
-      create-drop: validate
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        jdbc:
-          lob:
-            non_contextual_creation: true
 
-  sql:
-    init:
-      mode: always
-cors:
-  allowed-origins: "https://cafeterialumens-production.up.railway.app,http://localhost:8080"
-  allowed-methods: "*"
+---
+# Configuração de PRODUÇÃO (PostgreSQL)
+spring:
+  config:
+    activate:
+      on-profile: ${PROFILES_APP}
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 60000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
-    url: /v3/api-docs
-    display-request-duration: true
-  api-docs:
-    path: /v3/api-docs
-
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.hibernate: INFO
-    com.zaxxer.hikari: DEBUG
-
-server:
-  port: ${PORT:8080}
-  error:
-    include-message: always
-
+---
+# Configuração de DESENVOLVIMENTO (H2 - apenas para testes locais)
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
